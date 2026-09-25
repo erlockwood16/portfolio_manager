@@ -1,0 +1,95 @@
+
+================================================================================
+RUNNING: fundamentals/sec_loader_multi_year.py
+
+STDOUT:
+
+Processing 5 companies
+
+
+Loading AAPL
+AAPL: 17 years loaded
+
+Loading GOOGL
+GOOGL: 11 years loaded
+
+Loading MSFT
+MSFT: 17 years loaded
+
+Loading NVDA
+NVDA: 16 years loaded
+
+Loading TSLA
+TSLA: 15 years loaded
+
+Multi-Year SEC Load Complete
+
+================================================================================
+RUNNING: fundamentals/extract_shares_outstanding.py
+
+STDOUT:
+
+Processing 5 companies
+
+
+Processing AAPL
+Using DEI tag: EntityCommonStockSharesOutstanding
+17 rows updated
+
+Processing GOOGL
+Using US-GAAP tag: CommonStockSharesIssued
+11 rows updated
+
+Processing MSFT
+Using DEI tag: EntityCommonStockSharesOutstanding
+17 rows updated
+
+Processing NVDA
+Using DEI tag: EntityCommonStockSharesOutstanding
+16 rows updated
+
+Processing TSLA
+Using DEI tag: EntityCommonStockSharesOutstanding
+15 rows updated
+
+Share Extraction Complete
+
+================================================================================
+RUNNING: fundamentals/calculate_sec_metrics.py
+
+STDOUT:
+AAPL | Revenue Growth=6.43% | Earnings Growth=19.5% | ROE=151.91% | D/E=3.87
+GOOGL | Revenue Growth=None% | Earnings Growth=32.01% | ROE=31.83% | D/E=0.43
+MSFT | Revenue Growth=17.79% | Earnings Growth=31.34% | ROE=30.23% | D/E=0.71
+NVDA | Revenue Growth=None% | Earnings Growth=64.75% | ROE=76.33% | D/E=0.31
+TSLA | Revenue Growth=-2.93% | Earnings Growth=-46.5% | ROE=4.58% | D/E=0.66
+
+Updated 5 companies
+
+================================================================================
+RUNNING: fundamentals/calculate_market_metrics.py
+
+STDOUT:
+AAPL | EPS=112.01 | PE=3.03 | P/B=4.61
+GOOGL | EPS=132.17 | PE=2.66 | P/B=0.85
+MSFT | EPS=133.749 | PE=3.72 | P/B=1.13
+NVDA | EPS=120.067 | PE=1.91 | P/B=1.46
+TSLA | EPS=3.794 | PE=99.87 | P/B=4.57
+
+Updated 5 companies
+
+================================================================================
+RUNNING: analytics/refactor_factor_scores.py
+
+STDOUT:
+
+================================================================================
+FACTOR SCORE REBUILD
+================================================================================
+AAPL    Value=84.0  Quality=76.0  Growth=50.0  Momentum=100.0 Overall=78.0
+AMZN    Value=50.0  Quality=50.0  Growth=50.0  Momentum=70.0  Overall=54.0
+GOOGL   Value=100.0 Quality=100.0 Growth=65.0  Momentum=60.0  Overall=85.0
+META    Value=50.0  Quality=50.0  Growth=50.0  Momentum=100.0 Overall=60.0
+MSFT    Value=92.0  Quality=94.0  Growth=70.0  Momentum=100.0 Overall=89.8
+
+Updated 5 stocks

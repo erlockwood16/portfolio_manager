@@ -1,0 +1,84 @@
+
+================================================================================
+RUNNING: ingestion/update_daily_prices.py
+
+STDOUT:
+
+Processing 7 tickers
+AAPL already updated today
+AMZN already updated today
+GOOGL already updated today
+META already updated today
+MSFT already updated today
+Updating NVDA
+NVDA updated (2026-09-22) Close=228.87
+Updating TSLA
+TSLA updated (2026-09-22) Close=378.9
+
+Daily Update Complete
+
+STDERR:
+C:\Users\ELockwood\OneDrive - Revantage Corporate Services, LLC\Desktop\AI Resources\Portfolio Manager\ingestion\update_daily_prices.py:111: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+  price_date = datetime.utcfromtimestamp(
+
+================================================================================
+RUNNING: analytics/update_scores.py
+
+STDOUT:
+AAPL | Momentum=100 | Vol=21.07 | Overall=89.47
+AMZN | Momentum=70 | Vol=24.90 | Overall=57.55
+GOOGL | Momentum=60 | Vol=23.32 | Overall=48.34
+META | Momentum=100 | Vol=28.46 | Overall=85.77
+MSFT | Momentum=100 | Vol=21.18 | Overall=89.41
+Skipping NVDA (only 2 records)
+Skipping TSLA (only 1 records)
+
+5 tickers scored
+
+================================================================================
+RUNNING: analytics/refactor_factor_scores.py
+
+STDOUT:
+
+================================================================================
+FACTOR SCORE REBUILD
+================================================================================
+AAPL    Value=84.0  Quality=76.0  Growth=50.0  Momentum=100.0 Overall=78.0
+AMZN    Value=50.0  Quality=50.0  Growth=50.0  Momentum=70.0  Overall=54.0
+GOOGL   Value=100.0 Quality=100.0 Growth=65.0  Momentum=60.0  Overall=85.0
+META    Value=50.0  Quality=50.0  Growth=50.0  Momentum=100.0 Overall=60.0
+MSFT    Value=92.0  Quality=94.0  Growth=70.0  Momentum=100.0 Overall=89.8
+
+Updated 5 stocks
+
+================================================================================
+RUNNING: analytics/find_buy_candidates.py
+
+STDOUT:
+
+======================================================================
+INVESTMENT OPPORTUNITIES
+======================================================================
+MSFT    Price=$  498.00  Momentum=100.0  Vol= 21.18  Score= 89.80  STRONG BUY
+GOOGL   Price=$  351.16  Momentum= 60.0  Vol= 23.32  Score= 85.00  WATCH
+AAPL    Price=$  339.75  Momentum=100.0  Vol= 21.07  Score= 78.00  BUY
+META    Price=$  736.60  Momentum=100.0  Vol= 28.46  Score= 60.00  WATCH
+AMZN    Price=$  254.98  Momentum= 70.0  Vol= 24.90  Score= 54.00  WATCH
+
+Saved 5 recommendations
+
+================================================================================
+RUNNING: analytics/build_research_queue.py
+
+STDOUT:
+MSFT already exists
+AAPL already exists
+
+0 stocks added to queue
+
+================================================================================
+RUNNING: portfolio/recommend_allocations.py
+
+STDOUT:
+
+No APPROVED investment theses found.
