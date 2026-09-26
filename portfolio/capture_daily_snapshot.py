@@ -9,18 +9,47 @@ from datetime import datetime
 
 DB_PATH = "InvestmentAdvisor.db"
 
-# Until cash is automated, update this manually
-CASH_BALANCE = 5681.33
-
 # ==========================================
 # Database
 # ==========================================
 
-conn = sqlite3.connect(
-    DB_PATH
-)
+conn = sqlite3.connect(DB_PATH)
 
 cursor = conn.cursor()
+
+# ==========================================
+# Cash Balance
+# ==========================================
+
+def get_actual_cash_balance(conn):
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT cash_balance
+    FROM portfolio_cash
+    WHERE source='ROBINHOOD'
+    """)
+
+    row = cursor.fetchone()
+
+    imported_cash = row[0] if row else 0
+
+    cursor.execute("""
+    SELECT
+        COALESCE(
+            SUM(amount),
+            0
+        )
+    FROM cash_adjustments
+    """)
+
+    adjustments = cursor.fetchone()[0]
+
+    return round(
+        imported_cash + adjustments,
+        2
+    )
 
 # ==========================================
 # Snapshot Table
@@ -139,70 +168,41 @@ if df.empty:
 # ==========================================
 
 df["cost_basis"] = (
-
     df["shares"]
-
     *
-
     df["average_cost"]
-
 )
 
 df["market_value"] = (
-
     df["shares"]
-
     *
-
     df["close_price"]
-
 )
 
 portfolio_market_value = round(
-
-    df["market_value"]
-    .sum(),
-
+    df["market_value"].sum(),
     2
-
 )
 
 portfolio_cost_basis = round(
-
-    df["cost_basis"]
-    .sum(),
-
-    2
-
-)
-
-cash_balance = round(
-    CASH_BALANCE,
+    df["cost_basis"].sum(),
     2
 )
+
+cash_balance = get_actual_cash_balance(conn)
 
 total_account_value = round(
-
     portfolio_market_value
-
     +
-
     cash_balance,
-
     2
-
 )
 
 unrealized_gain_loss = round(
-
     portfolio_market_value
-
     -
-
     portfolio_cost_basis,
-
     2
-
 )
 
 return_pct = 0
@@ -210,21 +210,13 @@ return_pct = 0
 if portfolio_cost_basis > 0:
 
     return_pct = round(
-
         (
-
             unrealized_gain_loss
-
             /
-
             portfolio_cost_basis
-
         )
-
         * 100,
-
         2
-
     )
 
 # ==========================================

@@ -7,17 +7,61 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
 DB_PATH = ROOT / "InvestmentAdvisor.db"
-DEFAULT_IMPORT_FOLDER = ROOT / "portfolio" / "imports"
+
+DEFAULT_IMPORT_FOLDER = ROOT / "robinhood_import"
+
 SOURCE_NAME = "ROBINHOOD"
+
+
+def get_latest_csv():
+    """
+    Return the most recently modified CSV file
+    from the Robinhood import folder.
+    """
+
+    DEFAULT_IMPORT_FOLDER.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    csv_files = list(
+        DEFAULT_IMPORT_FOLDER.glob("*.csv")
+    )
+
+    if not csv_files:
+        return None
+
+    return max(
+        csv_files,
+        key=lambda f: f.stat().st_mtime
+    )
 
 STOCK_BUY_CODES = {"BUY"}
 STOCK_SELL_CODES = {"SELL"}
 DIVIDEND_CODES = {"CDIV", "MDIV"}
 CASH_TRANSFER_CODES = {"ACH", "DCF"}
+OPTION_BUY_CODES = {
+    "BTO",
+    "BTC"
+}
+
+OPTION_SELL_CODES = {
+    "STC",
+    "STO"
+}
+
+STOCK_LENDING_CODES = {
+    "SLIP"
+}
+
+EVENT_CONTRACT_CODES = {
+    "FUTSWP"
+}
+
 EXCLUDED_CODES = {
-    "BTO", "STC", "STO", "BTC", "OEXP", "OASGN",
-    "SLIP", "FUTSWP"
+    "OEXP", "OASGN",
 }
 
 
@@ -54,9 +98,9 @@ def parse_number(value):
     return -number if negative else number
 
 
-def make_transaction_hash(activity_date, process_date, settle_date, ticker,
+def make_transaction_hash(row_number, activity_date, process_date, settle_date, ticker,
                           description, transaction_code, quantity, price, amount):
-    parts = [activity_date, process_date, settle_date, ticker, description,
+    parts = [row_number, activity_date, process_date, settle_date, ticker, description,
              transaction_code, quantity, price, amount]
     raw = "|".join("" if value is None else str(value) for value in parts)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -183,12 +227,45 @@ def classify_transaction(row):
             "amount": amount, "cash_type": cash_type
         }
 
+    if code in OPTION_BUY_CODES | OPTION_SELL_CODES:
+        return {
+            "category": "CASH",
+            "transaction_type": "OPTION",
+            "ticker": ticker or None,
+            "quantity": quantity,
+            "price": price,
+            "amount": amount,
+            "cash_type": "OPTION_PREMIUM"
+        }
+
+    if code in STOCK_LENDING_CODES:
+        return {
+            "category": "CASH",
+            "transaction_type": "STOCK_LENDING",
+            "ticker": ticker or None,
+            "quantity": None,
+            "price": None,
+            "amount": amount,
+            "cash_type": "STOCK_LENDING"
+        }
+
+    if code in EVENT_CONTRACT_CODES:
+        return {
+            "category": "CASH",
+            "transaction_type": "EVENT_CONTRACT_TRANSFER",
+            "ticker": None,
+            "quantity": None,
+            "price": None,
+            "amount": amount,
+            "cash_type": "EVENT_CONTRACT_TRANSFER"
+        }
+
     if code in EXCLUDED_CODES:
         return None
     return None
 
 
-def insert_transaction(cursor, row, classification, imported_at):
+def insert_transaction(cursor, row, classification, imported_at, row_number):
     activity_date = parse_date(row.get("Activity Date"))
     process_date = parse_date(row.get("Process Date"))
     settle_date = parse_date(row.get("Settle Date"))
@@ -196,7 +273,7 @@ def insert_transaction(cursor, row, classification, imported_at):
     transaction_code = normalize_code(row.get("Trans Code"))
 
     unique_hash = make_transaction_hash(
-        activity_date, process_date, settle_date, classification["ticker"],
+        row_number, activity_date, process_date, settle_date, classification["ticker"],
         description, transaction_code, classification["quantity"],
         classification["price"], classification["amount"]
     )
@@ -338,7 +415,7 @@ def import_robinhood_csv(csv_path, replace_existing=False):
                         excluded_count += 1
                         continue
                     inserted, unique_hash, activity_date, description = insert_transaction(
-                        cursor, row, classification, imported_at
+                        cursor, row, classification, imported_at, row_number
                     )
                     if not inserted:
                         duplicate_count += 1
@@ -353,7 +430,9 @@ def import_robinhood_csv(csv_path, replace_existing=False):
                         cash_count += 1
                 except Exception as exc:
                     error_count += 1
-                    print(f"Row {row_number} skipped: {exc}")
+                    print(f"\nRow {row_number} skipped")
+                    print(f"Error: {exc}")
+                    print(f"Data: {row}")
 
         positions_saved = rebuild_positions(cursor)
         cash_balance = rebuild_cash_balance(cursor)
@@ -401,21 +480,45 @@ def parse_arguments():
 
 
 def main():
-    args = parse_arguments()
-    if args.csv_file:
-        csv_path = Path(args.csv_file)
-    else:
-        DEFAULT_IMPORT_FOLDER.mkdir(parents=True, exist_ok=True)
-        csv_files = sorted(DEFAULT_IMPORT_FOLDER.glob("*.csv"))
-        if not csv_files:
-            print("\nNo CSV supplied.")
-            print("Run with a path, or place a CSV in:")
-            print(DEFAULT_IMPORT_FOLDER)
-            sys.exit(1)
-        csv_path = csv_files[-1]
-        print(f"\nUsing latest CSV found:\n{csv_path}")
 
-    import_robinhood_csv(csv_path, replace_existing=args.replace)
+    args = parse_arguments()
+
+    if args.csv_file:
+
+        csv_path = Path(
+            args.csv_file
+        )
+
+    else:
+
+        csv_path = get_latest_csv()
+
+        if csv_path is None:
+
+            print(
+                "\nNo CSV supplied."
+            )
+
+            print(
+                "Run with a path,"
+                " or place a CSV in:"
+            )
+
+            print(
+                DEFAULT_IMPORT_FOLDER
+            )
+
+            sys.exit(1)
+
+        print(
+            f"\nUsing latest CSV found:\n"
+            f"{csv_path}"
+        )
+
+    import_robinhood_csv(
+        csv_path,
+        replace_existing=args.replace
+    )
 
 
 if __name__ == "__main__":

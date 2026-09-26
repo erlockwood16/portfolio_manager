@@ -17,3 +17,5 @@ robinhood_import/
 
 # Zip Files
 *.zip
+
+*.code-workspace

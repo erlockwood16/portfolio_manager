@@ -17,6 +17,18 @@ ROOT = Path(__file__).resolve().parent.parent
 PIPELINE = [
 
     # --------------------------------------
+    # Robinhood Import
+    # --------------------------------------
+
+    "portfolio/import_robinhood_transactions.py",
+
+    # --------------------------------------
+    # Portfolio Snapshot
+    # --------------------------------------
+
+    "portfolio/capture_daily_snapshot.py",
+
+    # --------------------------------------
     # Market Data
     # --------------------------------------
 
@@ -124,7 +136,7 @@ with open(log_file, "w", encoding="utf-8") as log:
             break
 
         # ----------------------------------
-        # Run Script
+        # Execute Script
         # ----------------------------------
 
         try:
@@ -141,6 +153,7 @@ with open(log_file, "w", encoding="utf-8") as log:
                 text=True,
 
                 cwd=ROOT
+
             )
 
             # stdout
@@ -172,7 +185,7 @@ with open(log_file, "w", encoding="utf-8") as log:
             if result.returncode == 0:
 
                 print(
-                    f"SUCCESS"
+                    "SUCCESS"
                 )
 
             # Failure
@@ -180,7 +193,7 @@ with open(log_file, "w", encoding="utf-8") as log:
             else:
 
                 print(
-                    f"FAILED"
+                    "FAILED"
                 )
 
                 print(
@@ -196,7 +209,7 @@ with open(log_file, "w", encoding="utf-8") as log:
         except Exception as e:
 
             print(
-                f"EXCEPTION"
+                "EXCEPTION"
             )
 
             print(e)
