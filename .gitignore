@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+
+# Logs
+logs/
+
+# Imports
+robinhood_import/
+
+# Environment Variables
+.ENV
+.env
+
+# Database Files
+*.db
+
+# Zip Files
+*.zip
