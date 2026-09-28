@@ -29,8 +29,8 @@ today = datetime.today().strftime(
 # ==========================================
 
 cursor.execute("""
-SELECT ticker
-FROM watchlist
+SELECT DISTINCT ticker
+FROM company_universe
 ORDER BY ticker
 """)
 

@@ -1,0 +1,17 @@
+﻿ticker,target_group,min_weight_pct,target_weight_pct,max_weight_pct,thesis_status,allow_buy,allow_sell,notes
+CASH,CASH,5,10,20,APPROVED,1,1,Current account weight: 22.1378%
+VOO,CORE_ETF,10,15,20,APPROVED,1,1,Current account weight: 11.0786%
+PLTR,EQUITY,3,8,8,APPROVED,1,1,Current account weight: 9.6079%
+NOW,EQUITY,3,8,8,APPROVED,1,1,Current account weight: 9.5122%
+SNDK,EQUITY,3,8,8,APPROVED,1,1,Current account weight: 6.9274%
+DRAM,CORE_ETF,1,4,5,APPROVED,1,1,Current account weight: 6.0309%
+BX,EQUITY,2,6,7,APPROVED,1,1,Current account weight: 4.6143%
+HIMS,EQUITY,2,6,7,APPROVED,1,1,Current account weight: 4.5855%
+IREN,EQUITY,1,4,5,APPROVED,1,1,Current account weight: 3.9546%
+VLUE,CORE_ETF,3,5,10,APPROVED,1,1,Current account weight: 3.9283%
+ASTS,EQUITY,1,5,5,APPROVED,1,1,Current account weight: 3.6127%
+ICHR,EQUITY,1,3,5,APPROVED,1,1,Current account weight: 3.3865%
+QQQ,CORE_ETF,3,6,10,APPROVED,1,1,Current account weight: 2.9010%
+IBIT,CRYPTO,2,5,6,APPROVED,1,1,Current account weight: 2.7804%
+ORCL,EQUITY,2,5,7,APPROVED,1,1,Current account weight: 2.6711%
+DRAL,TACTICAL,1,2,4,APPROVED,1,1,Current account weight: 2.2706%

@@ -113,10 +113,12 @@ LIABILITY_TAGS = [
 
 cursor.execute("""
 SELECT
-    ticker,
-    cik
-FROM sec_company_map
-ORDER BY ticker
+    m.ticker,
+    m.cik
+FROM sec_company_map m
+INNER JOIN company_universe u
+    ON u.ticker = m.ticker
+ORDER BY m.ticker
 """)
 
 companies = cursor.fetchall()

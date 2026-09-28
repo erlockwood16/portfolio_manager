@@ -26,7 +26,7 @@ cursor = conn.cursor()
 
 cursor.execute("""
 SELECT ticker
-FROM watchlist
+FROM company_universe
 ORDER BY ticker
 """)
 
